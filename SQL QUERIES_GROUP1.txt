@@ -1,0 +1,119 @@
+1. SELECT * FROM Customer WHERE Status = 'Active' AND Industry = 'Technology';
+
+2. select*from Products order by Price ;
+
+3. select avg(Price)from Products;
+
+4. SELECT * FROM Products WHERE Price > (SELECT AVG(Price) FROM Products);
+
+5. select Contacts.Name as Contact_name ,Products.Name as Products_name from
+Contacts,Products;
+
+6. select *from Customer where Customer_name like 'A%';
+
+7. DELETE FROM Interactions WHERE InteractionID = 5;
+
+8. SELECT LeadID, Source, Status FROM Leads WHERE LeadID IN (SELECT DISTINCT CustomerID FROM
+Interactions );
+
+9. UPDATE Leads
+SET Status = 'Converted'
+WHERE LeadID = 2;
+
+10. SELECT i.InteractionID, i.Date, i.Type, s.Name AS SalesRepName
+FROM Interactions i
+JOIN SalesReps s ON i.SalesRepID = s.SalesRepID;
+
+11. SELECT Status, COUNT(*) AS LeadCount FROM Leads GROUP BY Status;
+
+12. SELECT * FROM Leads WHERE AssignedTo = 'John Doe';
+
+13. SELECT Leads.LeadID, Customer.Customer_name, Leads.Source, Leads.Status
+
+FROM Leads
+JOIN Customer ON Leads.CustomerID = Customer.Customer_id;
+
+14. SELECT Interactions.InteractionID, Customer.Customer_name, SalesReps.Name AS SalesRepName,
+Interactions.Type, Interactions.Date
+FROM Interactions
+JOIN Customer ON Interactions.CustomerID = Customer.Customer_id
+JOIN SalesReps ON Interactions.SalesRepID = SalesReps.SalesRepID;
+
+15. SELECT Interactions.InteractionID, Customer.Customer_name, Interactions.Type, Interactions.Date
+FROM Interactions
+JOIN Customer ON Interactions.CustomerID = Customer.Customer_id
+WHERE Customer.Industry = 'Healthcare';
+
+16. SELECT Customer.Customer_name, MAX(Interactions.Date) AS LastInteractionDate
+FROM Customer
+JOIN Interactions ON Customer.Customer_id = Interactions.CustomerID
+GROUP BY Customer.Customer_name;
+
+17. SELECT * FROM Products WHERE Price > 100;
+
+18. SELECT Industry, COUNT(*) AS CustomerCount
+FROM Customer
+GROUP BY Industry;
+
+19. SELECT Source, COUNT(*) AS LeadCount
+FROM Leads
+GROUP BY Source;
+
+20. DELIMITER $$
+CREATE TRIGGER update_lead_status
+AFTER INSERT ON Interactions
+FOR EACH ROW
+
+BEGIN
+IF NEW.FollowUpDate > CURDATE() THEN
+UPDATE Leads
+SET Status = 'Follow Up'
+WHERE LeadID = NEW.CustomerID; -- Assuming CustomerID refers to the LeadID
+END IF;
+END $$
+
+21. CREATE FUNCTION get_average_product_rating(p_product_id INT)
+RETURNS FLOAT
+DETERMINISTIC
+BEGIN
+DECLARE avg_rating FLOAT;
+
+SELECT AVG(rating) INTO avg_rating
+FROM Feedback
+WHERE product_id = p_product_id;
+
+RETURN IFNULL(avg_rating, 0); -- Return 0 if there are no ratings
+END $$
+SELECT get_average_product_rating(1);
+
+22. CREATE PROCEDURE get_interactions_by_salesrep(IN p_salesrep_id INT)
+BEGIN
+SELECT i.InteractionID, i.Date, i.Type, i.Notes, l.Source, l.Status
+FROM Interactions i
+JOIN Leads l ON i.CustomerID = l.CustomerID
+WHERE i.SalesRepID = p_salesrep_id;
+END $$
+
+DELIMITER ;
+
+CALL get_interactions_by_salesrep(1);
+
+23. INSERT INTO Interactions (InteractionID, CustomerID, SalesRepID, Date, Type, Notes,
+FollowUpDate)
+VALUES (11, 1, 1, '2024-11-01', 'Email', 'Testing trigger activation', '2024-11-05');
+
+24. SELECT LeadID, Status
+FROM Leads
+WHERE LeadID = 1;
+
+25. delimiter //
+create procedure find_contacts(in cust_id int)
+begin
+select*from Contacts where Customer_id=cust_id;
+end //
+delimiter ;
+
+call find_contacts(1);
+
+26. create view sales_territory as select sales_id,territory from sales;
+select* from sales_territory;
